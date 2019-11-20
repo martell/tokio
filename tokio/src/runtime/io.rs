@@ -11,6 +11,9 @@ cfg_io_driver! {
 
     use std::io;
 
+    /// Track if the I/O driver should be enabled
+    pub(crate) type Flag = bool;
+
     /// The driver value the runtime passes to the `timer` layer.
     ///
     /// When the `io-driver` feature is enabled, this is the "real" I/O driver
@@ -23,7 +26,7 @@ cfg_io_driver! {
     /// When the `io-driver` feature is **not** enabled, this is `()`.
     pub(crate) type Handle = driver::Handle;
 
-    pub(crate) fn create_driver() -> io::Result<(Driver, Handle)> {
+    pub(crate) fn create_driver(enable: Flag) -> io::Result<(Driver, Handle)> {
         let driver = driver::Driver::new()?;
         let handle = driver.handle();
 
@@ -40,13 +43,16 @@ cfg_not_io_driver! {
 
     use std::io;
 
+    /// The I/O driver is not enabled
+    pub(crate) type Flag = ();
+
     /// I/O is not enabled, use a condition variable based parker
     pub(crate) type Driver = ParkThread;
 
     /// There is no handle
     pub(crate) type Handle = ();
 
-    pub(crate) fn create_driver() -> io::Result<(Driver, Handle)> {
+    pub(crate) fn create_driver(enable: Flag) -> io::Result<(Driver, Handle)> {
         let driver = ParkThread::new();
 
         Ok((driver, ()))

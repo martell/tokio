@@ -1,5 +1,6 @@
+use crate::park::Park;
 use crate::runtime::time;
-use crate::runtime::{enter, io, Park};
+use crate::runtime::{enter, io};
 
 use std::future::Future;
 use std::mem::ManuallyDrop;
@@ -62,13 +63,13 @@ fn clone_waker(ptr: *const ()) -> RawWaker {
 }
 
 fn wake(ptr: *const ()) {
-    use crate::runtime::park::Unpark;
+    use crate::park::Unpark;
     let unpark = unsafe { Arc::from_raw(ptr as *const Handle) };
     (unpark).unpark()
 }
 
 fn wake_by_ref(ptr: *const ()) {
-    use crate::runtime::park::Unpark;
+    use crate::park::Unpark;
 
     let unpark = ptr as *const Handle;
     unsafe { (*unpark).unpark() }

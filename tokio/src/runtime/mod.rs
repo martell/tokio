@@ -156,8 +156,6 @@ pub use self::handle::Handle;
 
 mod io;
 
-mod park;
-pub use self::park::{Park, Unpark};
 
 mod shell;
 use self::shell::Shell;

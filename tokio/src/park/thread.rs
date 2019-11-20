@@ -1,6 +1,6 @@
 use crate::loom::sync::atomic::AtomicUsize;
 use crate::loom::sync::{Arc, Condvar, Mutex};
-use crate::runtime::park::{Park, Unpark};
+use crate::park::{Park, Unpark};
 
 use std::marker::PhantomData;
 use std::rc::Rc;

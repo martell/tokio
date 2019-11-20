@@ -3,7 +3,7 @@
 //! slice.
 
 use crate::loom::rand::seed;
-use crate::runtime::park::Unpark;
+use crate::park::Unpark;
 use crate::runtime::thread_pool::{current, queue, Idle, Owned, Shared};
 use crate::task::{self, JoinHandle, Task};
 use crate::util::{CachePadded, FastRand};

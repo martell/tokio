@@ -41,7 +41,7 @@ const LOCAL_QUEUE_CAPACITY: usize = 2;
 
 use crate::blocking;
 use crate::loom::sync::Arc;
-use crate::runtime::Park;
+use crate::park::Park;
 use crate::task::JoinHandle;
 
 use std::fmt;
@@ -160,7 +160,7 @@ impl<P> Park for BoxedPark<P>
 where
     P: Park,
 {
-    type Unpark = Box<dyn crate::runtime::park::Unpark>;
+    type Unpark = Box<dyn crate::park::Unpark>;
     type Error = P::Error;
 
     fn unpark(&self) -> Self::Unpark {

@@ -39,6 +39,14 @@ pub struct Builder {
     /// The task execution model to use.
     kind: Kind,
 
+    /// Whether or not to enable the I/O driver
+    enable_io: io::Flag,
+
+    /*
+    /// Whether or not to enable the time driver
+    enable_time: time::Flag,
+    */
+
     /// The number of worker threads.
     ///
     /// Only used when not using the current-thread executor.
@@ -81,6 +89,9 @@ impl Builder {
         Builder {
             // No task execution by default
             kind: Kind::Shell,
+
+            // I/O defaults to "off"
+            enable_io: io::Flag::default(),
 
             // Default to use an equal number of threads to number of CPU cores
             num_threads: crate::loom::sys::num_cpus(),
@@ -266,7 +277,7 @@ impl Builder {
         let clock = time::create_clock();
 
         // Create I/O driver
-        let (io_driver, handle) = io::create_driver()?;
+        let (io_driver, handle) = io::create_driver(self.enable_io)?;
         let io_handles = vec![handle];
 
         let (driver, handle) = time::create_driver(io_driver, clock.clone());
@@ -289,6 +300,19 @@ impl Builder {
     }
 }
 
+cfg_io_driver! {
+    impl Builder {
+        /// Enable the I/O driver.
+        ///
+        /// Doing this enables using net, process, signal, and some I/O types
+        /// with the runtime.
+        pub fn enable_io(&mut self) -> &mut Self {
+            self.kind = Kind::Basic;
+            self
+        }
+    }
+}
+
 cfg_rt_core! {
     impl Builder {
         fn build_basic_runtime(&mut self) -> io::Result<Runtime> {
@@ -297,7 +321,7 @@ cfg_rt_core! {
             let clock = time::create_clock();
 
             // Create I/O driver
-            let (io_driver, handle) = io::create_driver()?;
+            let (io_driver, handle) = io::create_driver(self.enable_io)?;
             let io_handles = vec![handle];
 
             let (driver, handle) = time::create_driver(io_driver, clock.clone());
@@ -343,7 +367,7 @@ cfg_rt_threaded! {
 
             for _ in 0..self.num_threads {
                 // Create I/O driver and handle
-                let (io_driver, handle) = io::create_driver()?;
+                let (io_driver, handle) = io::create_driver(self.enable_io)?;
                 io_handles.push(handle);
 
                 // Create a new timer.

@@ -1,4 +1,4 @@
-use crate::runtime::park::{Park, Unpark};
+use crate::park::{Park, Unpark};
 use crate::task::{self, JoinHandle, Schedule, Task};
 
 use std::cell::UnsafeCell;

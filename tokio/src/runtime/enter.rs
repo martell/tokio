@@ -83,7 +83,7 @@ cfg_rt_threaded! {
         where
             F: std::future::Future,
         {
-            use crate::runtime::park::{CachedParkThread, Park};
+            use crate::park::{CachedParkThread, Park};
             use std::pin::Pin;
             use std::task::Context;
             use std::task::Poll::Ready;

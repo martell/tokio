@@ -1,7 +1,7 @@
 use crate::blocking;
 use crate::loom::cell::CausalCell;
 use crate::loom::sync::Arc;
-use crate::runtime::park::{Park, Unpark};
+use crate::park::{Park, Unpark};
 use crate::runtime::thread_pool::{current, shutdown, slice, Callback, Owned, Shared, Spawner};
 use crate::task::Task;
 

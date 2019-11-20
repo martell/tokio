@@ -58,7 +58,7 @@ use std::time::Duration;
 /// See [module documentation][mod] for more details.
 ///
 /// [mod]: ../index.html
-pub trait Park {
+pub(crate) trait Park {
     /// Unpark handle type for the `Park` implementation.
     type Unpark: Unpark;
 
@@ -112,7 +112,7 @@ pub trait Park {
 ///
 /// [mod]: ../index.html
 /// [`Park`]: trait.Park.html
-pub trait Unpark: Sync + Send + 'static {
+pub(crate) trait Unpark: Sync + Send + 'static {
     /// Unblock a thread that is blocked by the associated `Park` handle.
     ///
     /// Calling `unpark` atomically makes available the unpark token, if it is

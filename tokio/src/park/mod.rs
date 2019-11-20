@@ -47,7 +47,6 @@
 mod thread;
 #[cfg(feature = "rt-threaded")]
 pub(crate) use self::thread::CachedParkThread;
-#[cfg(not(feature = "io-driver"))]
 pub(crate) use self::thread::ParkThread;
 
 use std::sync::Arc;

@@ -1,14 +1,13 @@
+use crate::park::ParkThread;
 use crate::runtime::tests::loom_oneshot as oneshot;
 use crate::runtime::thread_pool::ThreadPool;
-use crate::runtime::{Park, Unpark};
 use crate::spawn;
 
 use loom::sync::atomic::{AtomicBool, AtomicUsize};
-use loom::sync::{Arc, Mutex, Notify};
+use loom::sync::{Arc, Mutex};
 
 use std::future::Future;
 use std::sync::atomic::Ordering::{Acquire, Relaxed, Release};
-use std::time::Duration;
 
 #[test]
 fn pool_multi_spawn() {
@@ -178,7 +177,7 @@ fn mk_pool(num_threads: usize) -> Runtime {
         num_threads,
         blocking_pool.spawner().clone(),
         Arc::new(Box::new(|_, next| next())),
-        move |_| LoomPark::new(),
+        move |_| ParkThread::new(),
     );
 
     Runtime {
@@ -265,48 +264,5 @@ impl ops::Deref for Runtime {
 impl ops::DerefMut for Runtime {
     fn deref_mut(&mut self) -> &mut ThreadPool {
         &mut self.executor
-    }
-}
-
-struct LoomPark {
-    notify: Arc<Notify>,
-}
-
-struct LoomUnpark {
-    notify: Arc<Notify>,
-}
-
-impl LoomPark {
-    fn new() -> LoomPark {
-        LoomPark {
-            notify: Arc::new(Notify::new()),
-        }
-    }
-}
-
-impl Park for LoomPark {
-    type Unpark = LoomUnpark;
-
-    type Error = ();
-
-    fn unpark(&self) -> LoomUnpark {
-        let notify = self.notify.clone();
-        LoomUnpark { notify }
-    }
-
-    fn park(&mut self) -> Result<(), Self::Error> {
-        self.notify.wait();
-        Ok(())
-    }
-
-    fn park_timeout(&mut self, _duration: Duration) -> Result<(), Self::Error> {
-        self.notify.wait();
-        Ok(())
-    }
-}
-
-impl Unpark for LoomUnpark {
-    fn unpark(&self) {
-        self.notify.notify();
     }
 }
